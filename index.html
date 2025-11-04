@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekapitulasi LKH</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-in { animation: slideIn 0.3s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-emerald-50 via-white to-teal-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header -->
+        <div class="mb-8 text-center slide-in">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">
+                📋 Rekapitulasi LKH
+            </h1>
+            <p class="text-gray-600">Laporan Kinerja Harian Pegawai</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 slide-in">
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-emerald-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Total Data</p>
+                        <p class="text-3xl font-bold text-gray-800" id="total-data">0</p>
+                    </div>
+                    <div class="bg-emerald-100 p-3 rounded-lg">
+                        <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Tampil</p>
+                        <p class="text-3xl font-bold text-gray-800" id="showing-data">0</p>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-lg">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Terakhir Update</p>
+                        <p class="text-lg font-semibold text-gray-800" id="last-update">-</p>
+                    </div>
+                    <div class="bg-purple-100 p-3 rounded-lg">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter & Search Section -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6 slide-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <!-- Search -->
+                <div class="relative">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">🔍 Cari</label>
+                    <input 
+                        type="text" 
+                        id="search-input"
+                        placeholder="Cari nama, kegiatan..." 
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+                    >
+                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+
+                <!-- Unit Kerja Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">🏢 Unit Kerja</label>
+                    <select id="unit-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition">
+                        <option value="">Semua Unit</option>
+                    </select>
+                </div>
+
+                <!-- RHK Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">📊 RHK</label>
+                    <select id="rhk-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition">
+                        <option value="">Semua RHK</option>
+                    </select>
+                </div>
+
+                <!-- Date Range -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">📅 Tanggal</label>
+                    <input 
+                        type="date" 
+                        id="date-filter"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
+                    >
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-3">
+                <button 
+                    id="reset-filter"
+                    class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition flex items-center gap-2"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Reset Filter
+                </button>
+                <button 
+                    id="refresh-data"
+                    class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition flex items-center gap-2"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Refresh Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+            <p class="mt-4 text-gray-600">Memuat data...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="hidden bg-red-50 border-l-4 border-red-500 p-6 rounded-lg mb-6">
+            <div class="flex items-center">
+                <svg class="w-6 h-6 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-red-700 font-medium" id="error-message"></p>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div id="table-container" class="hidden slide-in">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-semibold">No</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold">Tanggal</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold">Unit Kerja</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold">Nama Pegawai</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold">RHK</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold">Kegiatan</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold">Dokumen</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body" class="divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-2">
+                            <label class="text-sm text-gray-700 font-medium">Tampilkan:</label>
+                            <select id="items-per-page" class="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span class="text-sm text-gray-600">per halaman</span>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button 
+                                id="prev-page"
+                                class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                                Prev
+                            </button>
+
+                            <div id="page-numbers" class="flex gap-1"></div>
+
+                            <button 
+                                id="next-page"
+                                class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1"
+                            >
+                                Next
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="text-sm text-gray-600">
+                            <span id="page-info">Halaman 1 dari 1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjakodEcivqW_3PnajBu7V-J-jePlTrd-RewBnBp-m0j3QPeP_xjdSIrbVTItKuN2bJQ1ued7yhbs3ZTbbRc3BpKaLxjQg3TRwpN60tmnwyUxJl20tEAy5nSY5aMWrTHLEsZkUI4NtpGPq8BK6828Zm4HfU4OAGuZPBaM4UpTQUN4rrTrg3nPh5walbr2VHIInbKyd_KQYdtzQEEd0PbuWVqBbCkRcqHYV3gzUJ9tvzVJk9VpbsaS1HIysD6meixZOznRKUmSXy83K0SR6oi1voVDN6VQ&lib=MKS-xoW9b-VcJAksyma05DUKkhXDGw_ZZ';
+
+        let allData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        let itemsPerPage = 10;
+
+        // Fetch data
+        async function fetchData() {
+            try {
+                document.getElementById('loading').classList.remove('hidden');
+                document.getElementById('error').classList.add('hidden');
+                document.getElementById('table-container').classList.add('hidden');
+
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Gagal mengambil data');
+
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    allData = result.data;
+                    filteredData = [...allData];
+                    
+                    // Update stats
+                    document.getElementById('total-data').textContent = result.total;
+                    document.getElementById('last-update').textContent = new Date(result.updated).toLocaleString('id-ID', {
+                        day: '2-digit',
+                        month: 'short',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    populateFilters();
+                    applyFilters();
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('table-container').classList.remove('hidden');
+                } else {
+                    throw new Error('Data tidak valid');
+                }
+            } catch (error) {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('error').classList.remove('hidden');
+                document.getElementById('error-message').textContent = error.message;
+            }
+        }
+
+        // Populate filter options
+        function populateFilters() {
+            const units = [...new Set(allData.map(item => item['Unit Kerja']))].sort();
+            const rhks = [...new Set(allData.map(item => item.RHK))].sort();
+
+            const unitFilter = document.getElementById('unit-filter');
+            const rhkFilter = document.getElementById('rhk-filter');
+
+            unitFilter.innerHTML = '<option value="">Semua Unit</option>';
+            units.forEach(unit => {
+                unitFilter.innerHTML += `<option value="${unit}">${unit}</option>`;
+            });
+
+            rhkFilter.innerHTML = '<option value="">Semua RHK</option>';
+            rhks.forEach(rhk => {
+                rhkFilter.innerHTML += `<option value="${rhk}">${rhk}</option>`;
+            });
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const unitFilter = document.getElementById('unit-filter').value;
+            const rhkFilter = document.getElementById('rhk-filter').value;
+            const dateFilter = document.getElementById('date-filter').value;
+
+            filteredData = allData.filter(item => {
+                const matchSearch = !searchTerm || 
+                    item['Nama Pegawai'].toString().toLowerCase().includes(searchTerm) ||
+                    item.Kegiatan.toString().toLowerCase().includes(searchTerm);
+                
+                const matchUnit = !unitFilter || item['Unit Kerja'].toString() === unitFilter;
+                const matchRHK = !rhkFilter || item.RHK.toString() === rhkFilter;
+                
+                const matchDate = !dateFilter || 
+                    new Date(item.Tanggal).toISOString().split('T')[0] === dateFilter;
+
+                return matchSearch && matchUnit && matchRHK && matchDate;
+            });
+
+            currentPage = 1;
+            renderTable();
+        }
+
+        // Render table
+        function renderTable() {
+            const tbody = document.getElementById('table-body');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageData = filteredData.slice(startIndex, endIndex);
+
+            tbody.innerHTML = '';
+
+            if (pageData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <p class="text-lg font-medium">Tidak ada data yang ditemukan</p>
+                            <p class="text-sm">Coba ubah filter pencarian Anda</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                pageData.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50 transition';
+                    
+                    const date = new Date(item.Tanggal);
+                    const formattedDate = date.toLocaleDateString('id-ID', {
+                        weekday: 'short',
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                    });
+
+                    row.innerHTML = `
+                        <td class="px-6 py-4 text-sm text-gray-700 font-medium">${startIndex + index + 1}</td>
+                        <td class="px-6 py-4 text-sm text-gray-700">${formattedDate}</td>
+                        <td class="px-6 py-4 text-sm text-gray-700">${item['Unit Kerja']}</td>
+                        <td class="px-6 py-4 text-sm text-gray-700 font-medium">${item['Nama Pegawai']}</td>
+                        <td class="px-6 py-4 text-sm">
+                            <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold">${item.RHK}</span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-700">${item.Kegiatan}</td>
+                        <td class="px-6 py-4 text-sm">
+                            ${item.Dokumen ? 
+                                `<a href="${item.Dokumen}" target="_blank" class="text-emerald-600 hover:text-emerald-800 font-medium flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                                    </svg>
+                                    Lihat
+                                </a>` : 
+                                '<span class="text-gray-400">-</span>'
+                            }
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            document.getElementById('showing-data').textContent = filteredData.length;
+            updatePagination();
+        }
+
+        // Update pagination
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            
+            document.getElementById('prev-page').disabled = currentPage === 1;
+            document.getElementById('next-page').disabled = currentPage === totalPages || totalPages === 0;
+            
+            document.getElementById('page-info').textContent = 
+                `Halaman ${totalPages === 0 ? 0 : currentPage} dari ${totalPages}`;
+
+            // Page numbers
+            const pageNumbersContainer = document.getElementById('page-numbers');
+            pageNumbersContainer.innerHTML = '';
+
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+            if (endPage - startPage < maxVisiblePages - 1) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.className = `px-3 py-1 rounded-lg transition ${
+                    i === currentPage 
+                        ? 'bg-emerald-600 text-white font-semibold' 
+                        : 'border border-gray-300 hover:bg-gray-100'
+                }`;
+                btn.onclick = () => {
+                    currentPage = i;
+                    renderTable();
+                };
+                pageNumbersContainer.appendChild(btn);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('search-input').addEventListener('input', applyFilters);
+        document.getElementById('unit-filter').addEventListener('change', applyFilters);
+        document.getElementById('rhk-filter').addEventListener('change', applyFilters);
+        document.getElementById('date-filter').addEventListener('change', applyFilters);
+
+        document.getElementById('items-per-page').addEventListener('change', (e) => {
+            itemsPerPage = parseInt(e.target.value);
+            currentPage = 1;
+            renderTable();
+        });
+
+        document.getElementById('prev-page').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        });
+
+        document.getElementById('next-page').addEventListener('click', () => {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+            }
+        });
+
+        document.getElementById('reset-filter').addEventListener('click', () => {
+            document.getElementById('search-input').value = '';
+            document.getElementById('unit-filter').value = '';
+            document.getElementById('rhk-filter').value = '';
+            document.getElementById('date-filter').value = '';
+            applyFilters();
+        });
+
+        document.getElementById('refresh-data').addEventListener('click', fetchData);
+
+        // Initial load
+        fetchData();
+    </script>
+</body>
+</html>
